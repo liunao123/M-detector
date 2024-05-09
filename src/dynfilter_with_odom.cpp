@@ -75,6 +75,20 @@ void OdomCallback(const nav_msgs::Odometry &cur_odom)
     buffer_times.push_back(lidar_end_time);
 }
 
+void PoseCallback(const geometry_msgs::PoseStamped &cur_pose)
+{
+    Eigen::Quaterniond cur_q;
+    geometry_msgs::Quaternion tmp_q;
+    tmp_q = cur_pose.pose.orientation;
+    tf::quaternionMsgToEigen(tmp_q, cur_q);
+    cur_rot = cur_q.matrix();
+    cur_pos << cur_pose.pose.position.x, cur_pose.pose.position.y, cur_pose.pose.position.z;
+    buffer_rots.push_back(cur_rot);
+    buffer_poss.push_back(cur_pos);
+    lidar_end_time = cur_pose.header.stamp.toSec();
+    buffer_times.push_back(lidar_end_time);
+}
+
 void PointsCallback(const sensor_msgs::PointCloud2ConstPtr& msg_in)
 {
     boost::shared_ptr<PointCloudXYZI> feats_undistort(new PointCloudXYZI());
@@ -131,7 +145,10 @@ int main(int argc, char** argv)
     pub_pcl_std  = nh.advertise<sensor_msgs::PointCloud2> ("/m_detector/std_points", 100000);   
     ros::Subscriber sub_pcl = nh.subscribe(points_topic, 200000, PointsCallback);
     ros::Subscriber sub_odom = nh.subscribe(odom_topic, 200000, OdomCallback);
-    ros::Timer timer = nh.createTimer(ros::Duration(0.01), TimerCallback);
+    ros::Subscriber sub_pose = nh.subscribe("pose_offline", 200000, PoseCallback);
+    ros::Subscriber sub_pcl_offline = nh.subscribe("points_offline", 200000, PointsCallback);
+    
+    ros::Timer timer = nh.createTimer(ros::Duration(0.1), TimerCallback);
 
     ros::spin();
     return 0;

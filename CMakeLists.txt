@@ -3,6 +3,10 @@ project(m_detector)
 
 SET(CMAKE_BUILD_TYPE "Release")
 
+
+set(CMAKE_C_COMPILER "/usr/bin/gcc-9")
+set(CMAKE_CXX_COMPILER "/usr/bin/g++-9")
+
 ADD_COMPILE_OPTIONS(-std=c++17 )
 set( CMAKE_CXX_FLAGS "-std=c++17 -O3 -ltbb" ) 
 
@@ -44,12 +48,12 @@ find_package(OpenMP QUIET)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   ${OpenMP_C_FLAGS}")
 
-find_package(PythonLibs REQUIRED)
+# find_package(PythonLibs REQUIRED)
 # find_path(MATPLOTLIB_CPP_INCLUDE_DIRS "matplotlibcpp.h")
 
-set(TBB_DIR "/usr/local/tbb-2019_U8")
-include("/home/huajie/package/oneTBB-2019_U8/cmake/TBBBuild.cmake")
-tbb_build(TBB_ROOT "/home/huajie/package/oneTBB-2019_U8" CONFIG_DIR TBB_DIR)
+# set(TBB_DIR "/usr/local/tbb-2019_U8")
+include("/opt/csg/slam/navs/src/M-detector/oneTBB-2019_U8/cmake/TBBBuild.cmake")
+tbb_build(TBB_ROOT "/opt/csg/slam/navs/src/M-detector/oneTBB-2019_U8" CONFIG_DIR TBB_DIR)
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
